@@ -101,7 +101,7 @@ class CarPlatesDetector:
 
 
     def _getResultPlateImage(self, x: int, y: int, w: int, h: int) -> np.ndarray:
-        imgCropped = self.inputImg[y: y+h-1, x:x+w-1]
+        imgCropped = self.inputImg[y: y+h, x:x+w]
         return imgCropped
 
 
@@ -114,14 +114,17 @@ class CarPlatesDetector:
 
         return plateNumber
 
+
     def _loadModl(self, weightsPath: str, configPath: str) -> None:
         self.network = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
 
 
 # pure API test
 # if __name__ == "__main__":
-#     detector = CarPlatesDetector('models/lapi.weights', 'models/darknet-yolov3.cfg')
-#     detector.loadImage("car1.jpg")
+#     cfg = "./models/darknet-yolov3.cfg"
+#     weights = "./models/lapi.weights"
+#     detector = CarPlatesDetector(weights, cfg)
+#     detector.loadImage("../photos/car2.jpg")
     
 #     result = detector.process()
 

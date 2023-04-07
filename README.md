@@ -1,4 +1,6 @@
-# Install
+# PRE ACTION INSTALL
+## Model of Convolutional Neural Network (YOLO)
+Before usage download Yolo weights (lapi.weights), Yolo config (darknet-yolov3.cfg) and put it into src/models folder. Pre-trained model download [Link](https://www.kaggle.com/achrafkhazri/yolo-weights-for-licence-plate-detector?select=lapi.weights)
 ## Add a virtual environment
 ```
 python -m venv venv
@@ -12,7 +14,7 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-# Run server locally 
+# RUN SERVER LOCALLY
 ```
 uvicorn src.app:app --reload
 ```
