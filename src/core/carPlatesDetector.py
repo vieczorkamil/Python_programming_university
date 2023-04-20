@@ -1,9 +1,7 @@
-from typing import Union
-import matplotlib.pyplot as plt
-import pytesseract
+from typing import Union, Tuple
 import numpy as np
-import json
 import cv2
+import easyocr
 
 
 class CarPlatesDetector:
@@ -15,7 +13,6 @@ class CarPlatesDetector:
         self.results = None
         self.resetImage()
         self._loadModl(weightsPath=modelWeightsPath, configPath=modelConfigPath)
-        pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe' #FIXME: test this lib on docker -> on Windows need to put .exe path 
 
 
     def test(self) -> str:
@@ -35,11 +32,11 @@ class CarPlatesDetector:
         self.inputImg = None
 
 
-    def process(self) -> Union[bool, list[bool, np.ndarray, np.ndarray, str]]:
+    def process(self) -> Tuple[str, Union[np.ndarray, any], Union[np.ndarray, any], Union[str, any]]:
         img = None
         imgPlate = None
         plateText = None
-        retValue = False
+        retValue = "Not found"
         blob = self._preProcessing()
         if self._search(networkInput=blob):
             for i in self.results.flatten():
@@ -49,12 +46,12 @@ class CarPlatesDetector:
                 imgPlate = self._getResultPlateImage(x=xMin, y=yMin, w=boxWidth, h=boxHeight)
                 plateText = self._getResultPlateText(imgPlate)
                 self.resetImage()
-                retValue = True
+                retValue = "Found"
             
-        if retValue:
-            return [True, img, imgPlate, plateText]
+        if retValue == "Found":
+            return [retValue, img, imgPlate, plateText]
         else:
-            return False
+            return [retValue, None, None, None]
 
 
     def _search(self, networkInput: np.ndarray) -> bool:
@@ -107,8 +104,11 @@ class CarPlatesDetector:
 
     def _getResultPlateText(self, imgInput) -> str:
         imgInput = cv2.cvtColor(imgInput, cv2.COLOR_RGB2GRAY)
-        plateNumber = pytesseract.image_to_string(imgInput, config=self.ocrCustomConfig)
-        weirdChar = [" ","'","[", "]","{", "}",",",".","/","?","~","`","\\","\"","(",")","!","|","-","_"]
+
+        reader = easyocr.Reader(['en'])
+        plateNumber = reader.readtext(imgInput, detail = 0)[0]
+
+        weirdChar = [" ","'","[", "]","{", "}",",",".","/","?","~","`","\\","\"","(",")","!","|","-","_","@"]
         for i in weirdChar:
             plateNumber = plateNumber.replace(i, "")
 

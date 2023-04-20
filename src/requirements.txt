@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+opencv-python-headless
+# opencv-contrib-python-headless
+# opencv-python==4.7.0.72
+python-multipart
+easyocr==1.6.2
