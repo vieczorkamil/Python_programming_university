@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  api:
+    stdin_open: true
+    tty: true
+    build: src
+    volumes:
+      - './src:/src' #synchronizacja 
+    ports:
+      - '8080:8000' #bedzie na 127.0.0.1:8080
