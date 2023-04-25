@@ -1,10 +1,10 @@
-from core.carPlatesDetector import CarPlatesDetector
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks
 from fastapi import Response
 from os import environ
 import numpy as np
 import uvicorn
 import cv2
+from core.carPlatesDetector import CarPlatesDetector
 
 
 app = FastAPI(
@@ -41,7 +41,6 @@ def backgroud_task() -> None:
     print("end background task")
 
 
-
 @app.post("/uploadPhoto")
 async def upload_photo(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     contents = await file.read()
@@ -53,7 +52,7 @@ async def upload_photo(background_tasks: BackgroundTasks, file: UploadFile = Fil
 
     return {"Upload status": "OK"}
 
-#TODO: index from global define 
+
 @app.get("/readPlateNumber")
 async def read_plate_number():
     print(app.result[0])
@@ -66,7 +65,6 @@ async def read_plate_number():
         response = {"Process": "In progress"}
     else:
         response = {"Process": app.result}
-    
     return response
 
 
@@ -75,14 +73,13 @@ async def show_plate():
     if app.result[0] == "Found":
         _, responseImg = cv2.imencode('.png', app.result[2])
         headers = {'Content-Disposition': 'inline; filename="number_plate.png"'}
-        response = Response(responseImg.tobytes() , headers=headers, media_type='image/png')
+        response = Response(responseImg.tobytes(), headers=headers, media_type='image/png')
     elif app.result[0] == "Not found":
         response = {"Process": "Error - number plate not found"}
     elif app.result[0] == "In progress":
         response = {"Process": "In progress"}
     else:
         response = {"Process": app.result}
-    
     return response
 
 
@@ -91,16 +88,15 @@ async def show_image():
     if app.result[0] == "Found":
         _, responseImg = cv2.imencode('.png', app.result[1])
         headers = {'Content-Disposition': 'inline; filename="image_with_highlighted_number_plate.png"'}
-        response = Response(responseImg.tobytes() , headers=headers, media_type='image/png')
+        response = Response(responseImg.tobytes(), headers=headers, media_type='image/png')
     elif app.result[0] == "Not found":
         response = {"Process": "Error - number plate not found"}
     elif app.result[0] == "In progress":
         response = {"Process": "In progress"}
     else:
         response = {"Process": app.result}
-    
     return response
 
 
-# if __name__ == '__main__':
-#     uvicorn.run("app:app", host='0.0.0.0', port=int(environ.get("PORT", 5000)))
+if __name__ == '__main__':
+    uvicorn.run("app:app", host='0.0.0.0', port=int(environ.get("PORT", 5000)))

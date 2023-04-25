@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
-opencv-python-headless
+opencv-python-headless==4.5.4.60
 python-multipart
 easyocr==1.6.2
 flake8
