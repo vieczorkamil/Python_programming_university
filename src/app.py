@@ -1,6 +1,7 @@
+from os import environ
+import os
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks
 from fastapi import Response
-from os import environ
 import numpy as np
 import uvicorn
 import cv2
@@ -23,7 +24,7 @@ async def read_root():
 
 @app.on_event("startup")
 async def startup_event():
-    app.detector = CarPlatesDetector('./models/lapi.weights', './models/darknet-yolov3.cfg')
+    app.detector = CarPlatesDetector(f'{os.path.abspath(os.getcwd())}/models/yolo3.weights', f'{os.path.abspath(os.getcwd())}/models/yolov3.cfg')
     app.result = "Not started yet"
     app.img = None
 
