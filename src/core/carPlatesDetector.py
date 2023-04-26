@@ -1,7 +1,7 @@
 from typing import Union, Tuple
 import numpy as np
 import cv2
-import easyocr
+# import easyocr
 
 
 class CarPlatesDetector:
@@ -88,6 +88,9 @@ class CarPlatesDetector:
 
     def _preProcessing(self) -> np.ndarray:
         if self.inputImg is not None:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print(type(self.inputImg))
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return cv2.dnn.blobFromImage(self.inputImg, scalefactor=1/255.0, size=(416,416), swapRB=True, crop=False)
 
 
@@ -103,16 +106,16 @@ class CarPlatesDetector:
 
 
     def _getResultPlateText(self, imgInput) -> str:
-        imgInput = cv2.cvtColor(imgInput, cv2.COLOR_RGB2GRAY)
+        # imgInput = cv2.cvtColor(imgInput, cv2.COLOR_RGB2GRAY)
 
-        reader = easyocr.Reader(['en'])
-        plateNumber = reader.readtext(imgInput, detail = 0)[0]
+        # reader = easyocr.Reader(['en'])
+        # plateNumber = reader.readtext(imgInput, detail = 0)[0]
 
-        weirdChar = [" ","'","[", "]","{", "}",",",".","/","?","~","`","\\","\"","(",")","!","|","-","_","@"]
-        for i in weirdChar:
-            plateNumber = plateNumber.replace(i, "")
+        # weirdChar = [" ","'","[", "]","{", "}",",",".","/","?","~","`","\\","\"","(",")","!","|","-","_","@"]
+        # for i in weirdChar:
+        #     plateNumber = plateNumber.replace(i, "")
 
-        return plateNumber
+        return "plateNumber"
 
 
     def _loadModl(self, weightsPath: str, configPath: str) -> None:

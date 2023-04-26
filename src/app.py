@@ -1,6 +1,10 @@
+from os import environ
+import os
+import gdown
+import zipfile
+import shutil
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks
 from fastapi import Response
-from os import environ
 import numpy as np
 import uvicorn
 import cv2
@@ -23,7 +27,26 @@ async def read_root():
 
 @app.on_event("startup")
 async def startup_event():
-    app.detector = CarPlatesDetector('./models/lapi.weights', './models/darknet-yolov3.cfg')
+    # if not os.path.exists("lapi.weights") or not os.path.exists("darknet-yolov3.cfg"):
+    #     url = 'https://drive.google.com/file/d/1cktcL1TXXRJ5o6CxzIuR08hPEWbb8Kkx/view?usp=sharing'
+    #     output = 'test.zip'
+    #     gdown.download(url, output, quiet=False, fuzzy=True)
+    #     with zipfile.ZipFile("test.zip", 'r') as zip_ref:
+    #         zip_ref.extractall("models")
+    #     shutil.move('./models/yolo_utils/lapi.weights', './lapi.weights')
+    #     shutil.move('./models/yolo_utils/darknet-yolov3.cfg', './darknet-yolov3.cfg')
+    #     shutil.rmtree('models')
+    #     os.remove('test.zip')
+    # else:
+    #     print("[........................... models exists ...............................]")
+
+
+    print("?????????????????????????????????????????????????????")
+    file_list = os.listdir('.')
+    for file_name in file_list:
+        print(file_name)
+    print("?????????????????????????????????????????????????????")
+    app.detector = CarPlatesDetector('lapi.weights', 'darknet-yolov3.cfg')
     app.result = "Not started yet"
     app.img = None
 
@@ -34,11 +57,11 @@ async def test():
 
 
 def backgroud_task() -> None:
-    print("start background task")
+    print("????????????????????????????????????????????????????? start background task")
     app.result = "In progress"
     app.detector.setInputImage(app.img)
     app.result = app.detector.process()
-    print("end background task")
+    print("????????????????????????????????????????????????????? end background task")
 
 
 @app.post("/uploadPhoto")
@@ -47,8 +70,15 @@ async def upload_photo(background_tasks: BackgroundTasks, file: UploadFile = Fil
     numpy_array = np.fromstring(contents, np.uint8)
     img = cv2.imdecode(numpy_array, cv2.IMREAD_COLOR)
     print(type(img))
-    app.img = show_image
+    # app.img = show_image
+    app.img = img
     background_tasks.add_task(backgroud_task)
+
+    # print("????????????????????????????????????????????????????? start background task")
+    # app.result = "In progress"
+    # app.detector.setInputImage(app.img)
+    # app.result = app.detector.process()
+    # print("????????????????????????????????????????????????????? end background task")
 
     return {"Upload status": "OK"}
 
@@ -99,4 +129,16 @@ async def show_image():
 
 
 if __name__ == '__main__':
+    if not os.path.exists("lapi.weights") or not os.path.exists("darknet-yolov3.cfg"):
+        url = 'https://drive.google.com/file/d/1cktcL1TXXRJ5o6CxzIuR08hPEWbb8Kkx/view?usp=sharing'
+        output = 'test.zip'
+        gdown.download(url, output, quiet=False, fuzzy=True)
+        with zipfile.ZipFile("test.zip", 'r') as zip_ref:
+            zip_ref.extractall("models")
+        shutil.move('./models/yolo_utils/lapi.weights', './lapi.weights')
+        shutil.move('./models/yolo_utils/darknet-yolov3.cfg', './darknet-yolov3.cfg')
+        shutil.rmtree('models')
+        os.remove('test.zip')
+    else:
+        print("[........................... models exists ...............................]")
     uvicorn.run("app:app", host='0.0.0.0', port=int(environ.get("PORT", 5000)))

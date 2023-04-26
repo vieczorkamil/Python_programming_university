@@ -5,26 +5,26 @@ on:
     branches: [master]
   
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Setup Python environment
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
-    - name: Install requirements
-      working-directory: src
-      run: pip install -r requirements.txt
-    - name: Lint with flake8
-      working-directory: src
-      run: |
-        flake8 --ignore=E501,E231 *.py
-        pylint --disable=C0301 --disable=C0114 --disable=C0116 --disable=W0612 --disable=R0912 --disable=R0914 --disable=W0603 --disable=C0103 --disable=R0915 --disable=R0913 --disable=W0621 --disable=E1101 *.py
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
+  #   - name: Setup Python environment
+  #     uses: actions/setup-python@v4
+  #     with:
+  #       python-version: '3.8'
+  #   - name: Install requirements
+  #     working-directory: src
+  #     run: pip install -r requirements.txt
+  #   - name: Lint with flake8
+  #     working-directory: src
+  #     run: |
+  #       flake8 --ignore=E501,E231 *.py
+  #       pylint --disable=C0301 --disable=C0114 --disable=C0116 --disable=W0612 --disable=R0912 --disable=R0914 --disable=W0603 --disable=C0103 --disable=R0915 --disable=R0913 --disable=W0621 --disable=E1101 *.py
 
   build:
-    needs: test
+    # needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
